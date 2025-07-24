@@ -1,16 +1,14 @@
 services:
   # The main entry point for the user
   launcher:
-    build: ./launcher
+    build: .
+    image: ai-playground:0.1
     container_name: demo_launcher
-    network_mode: host
-    #ports:
-    #  - "7860:7860" # Expose the Gradio UI on port 7860
-    command: ["sleep", "infinity"]
+    ports:
+      - "7860:7860" # Expose the Gradio UI on port 7860
     volumes:
       # Mount the Docker socket to allow this container to control others
       - /var/run/docker.sock:/var/run/docker.sock
-      - /Users/isubramanian/Documents/ai-playground:/app
 
   yolo_demo_service:
     image: ghcr.io/amperecomputingai/ampere-ai-ref-apps:yolov11-0.3.10
