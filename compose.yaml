@@ -1,0 +1,34 @@
+services:
+  # The main entry point for the user
+  launcher:
+    build: ./launcher
+    container_name: demo_launcher
+    network_mode: host
+    #ports:
+    #  - "7860:7860" # Expose the Gradio UI on port 7860
+    command: ["sleep", "infinity"]
+    volumes:
+      # Mount the Docker socket to allow this container to control others
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Users/isubramanian/Documents/ai-playground:/app
+
+  yolo_demo_service:
+    image: ghcr.io/amperecomputingai/ampere-ai-ref-apps:yolov11-0.3.10
+    container_name: yolo_demo_service
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    environment:
+      CONFIG_FILE: ${CONFIG_FILE:-cfg/config.yaml}
+      GRADIO_SERVER_NAME: ${GRADIO_SERVER_NAME:-0.0.0.0}
+      GRADIO_SERVER_PORT: ${GRADIO_SERVER_PORT:-7861}
+      HOST_PORT: ${HOST_PORT:-7861}
+      INSTANCE_NAME: ${INSTANCE_NAME:-'Ampere'}
+      NSTREAMS: ${NSTREAMS:-1}
+      NTHREADS: ${NTHREADS:-16}
+      VIDEO_SRC: ${VIDEO_SRC:-''}
+      WEBCAM0_SRC: ${WEBCAM0_SRC:-0}
+      WEBCAM1_SRC: ${WEBCAM1_SRC:-2}
+    #network_mode: host
+    ports:
+      #- "${HOST_PORT}:${GRADIO_SERVER_PORT:-7861}"
+      - "7861:7861"
