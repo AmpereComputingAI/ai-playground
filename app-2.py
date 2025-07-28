@@ -103,7 +103,7 @@ def launch_demo(demo_name):
 # --- Gradio Interface ---
 with gr.Blocks(theme=gr.themes.Soft(), css=".centered-title { text-align: center; flex: 0 0 80%; } .header-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; } .logo-container { flex: 0 0 20%; }") as demo_launcher:
     with gr.Row(elem_classes=["header-row"]):
-        gr.Image("ampere_logo_1530x780.png", width=80, height=40, show_label=False, container=False, elem_classes=["logo-container"])
+        gr.Image("static/ampere_logo_1530x780.png", width=80, height=40, show_label=False, container=False, elem_classes=["logo-container"])
         gr.Markdown(
             "# Ampere Optimized AI Playground",
             elem_classes=["centered-title"]
