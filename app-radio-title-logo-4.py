@@ -43,6 +43,17 @@ def stop_all_demos():
             container_to_stop.stop()
             container_to_stop.remove() # Remove to ensure a clean start next time
             print(f"{demo_info['service_name']} stopped.")
+
+            # Stop and remove dependent ollama container
+            if demo_info['service_name'] == 'llmchat_demo_service':
+                cont_name = 'ollama_demo_service'
+                container_to_stop = get_running_container(cont_name)
+                if container_to_stop:
+                    print(f"Stopping {cont_name}...")
+                    container_to_stop.stop()
+                    container_to_stop.remove() # Remove to ensure a clean start next time
+                    print(f"{cont_name} stopped.")
+
     current_container = None
     return "All demos have been stopped."
 
