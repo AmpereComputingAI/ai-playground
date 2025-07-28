@@ -14,7 +14,7 @@ DEMOS = {
         "url": "http://localhost:7862"
     },
     "LLM Chat (Ollama)": {
-        "service_name": "ollama_demo_service",
+        "service_name": "llmchat_demo_service",
         "url": "http://localhost:7863"
     }
 }
@@ -77,7 +77,7 @@ def launch_demo(demo_name):
         
         # The easiest method is to simply use subprocess to call docker-compose
         import subprocess
-        subprocess.run(["docker", "compose", "up", "-d", "--no-deps", service_name], check=True)
+        subprocess.run(["docker", "compose", "up", "-d", service_name], check=True)
         #subprocess.run(["./yolo_demo_service.sh"], check=True)
         current_container = client.containers.get(service_name)
 

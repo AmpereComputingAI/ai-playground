@@ -30,3 +30,47 @@ services:
     ports:
       #- "${HOST_PORT}:${GRADIO_SERVER_PORT:-7861}"
       - "7861:7861"
+
+  ollama_demo_service:
+    image: ghcr.io/amperecomputingai/ollama-ampere:0.0.8-ol9
+    container_name: ollama_demo_service
+    volumes:
+      - ollama:/root/.ollama
+    #network_mode: host
+    ports:
+      - "11434:11434"
+    environment:
+      - "OLLAMA_HOST=0.0.0.0:11434"
+    tty: true
+    restart: unless-stopped
+
+  llmchat_demo_service:
+    build:
+      context: open-webui
+      network: host
+      dockerfile: ../Dockerfile
+      args:
+        BASE_IMAGE: 'amperecomputingai/pytorch:1.11.1'
+    image: ghcr.io/open-webui/open-webui:v0.5.20
+    container_name: llmchat_demo_service
+    volumes:
+      - open-webui:/app/backend/data
+    depends_on:
+      - ollama_demo_service
+    network_mode: host
+    #ports:
+    #  - "7863:7863"
+    environment:
+      - 'PORT=7863'
+      - 'ENV=dev'
+      - 'VECTOR_DB=chroma'
+      - 'OLLAMA_BASE_URL=http://0.0.0.0:11434'
+      - 'WEBUI_NAME=Ampere Llama Chat'
+      - 'ENABLE_LITELLM=False'
+      - 'WEBUI_SECRET_KEY='
+      - 'WEBUI_AUTH=False'
+    restart: unless-stopped
+
+volumes:
+  ollama: {}
+  open-webui: {}
