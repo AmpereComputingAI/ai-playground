@@ -12,7 +12,7 @@ RUN ./02-install-docker.sh
 
 FROM base AS runtime
 COPY ./static ./static
-COPY compose.yaml app.py app-2.py 02-install-docker.sh .
+COPY compose.yaml app.py 02-install-docker.sh .
 
 #CMD ["python", "launcher/launcher.py"]
-CMD ["python", "-u", "app-2.py"]
+CMD ["python", "-u", "app.py"]
