@@ -63,12 +63,6 @@ services:
     restart: unless-stopped
 
   llmchat_demo_service:
-    build:
-      context: open-webui
-      network: host
-      dockerfile: ../Dockerfile
-      args:
-        BASE_IMAGE: 'amperecomputingai/pytorch:1.11.1'
     image: ghcr.io/open-webui/open-webui:v0.5.20
     container_name: llmchat_demo_service
     volumes:
