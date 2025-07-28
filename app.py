@@ -5,18 +5,18 @@ import time
 
 # --- Configuration ---
 DEMOS = {
+    "LLM Chat with RAG (Ollama)": {
+        "service_name": "llmchat_demo_service",
+        "url": "http://localhost:7861"
+    },
     "Object Detection (YOLO)": {
         "service_name": "yolo_demo_service",
-        "url": "http://localhost:7861"
+        "url": "http://localhost:7862"
     },
     "Speech-to-Text (Whisper)": {
         "service_name": "whisper_demo_service",
-        "url": "http://localhost:7862"
-    },
-    "LLM Chat (Ollama)": {
-        "service_name": "ollama_demo_service",
         "url": "http://localhost:7863"
-    }
+    },
 }
 
 # --- State & Docker Client ---
@@ -43,6 +43,17 @@ def stop_all_demos():
             container_to_stop.stop()
             container_to_stop.remove() # Remove to ensure a clean start next time
             print(f"{demo_info['service_name']} stopped.")
+
+            # Stop and remove dependent ollama container
+            if demo_info['service_name'] == 'llmchat_demo_service':
+                cont_name = 'ollama_demo_service'
+                container_to_stop = get_running_container(cont_name)
+                if container_to_stop:
+                    print(f"Stopping {cont_name}...")
+                    container_to_stop.stop()
+                    container_to_stop.remove() # Remove to ensure a clean start next time
+                    print(f"{cont_name} stopped.")
+
     current_container = None
     return "All demos have been stopped."
 
@@ -77,7 +88,7 @@ def launch_demo(demo_name):
         
         # The easiest method is to simply use subprocess to call docker-compose
         import subprocess
-        subprocess.run(["docker", "compose", "up", "-d", "--no-deps", service_name], check=True)
+        subprocess.run(["docker", "compose", "up", "-d", service_name], check=True)
         #subprocess.run(["./yolo_demo_service.sh"], check=True)
         current_container = client.containers.get(service_name)
 
@@ -90,12 +101,17 @@ def launch_demo(demo_name):
         return f"❌ Error launching {demo_name}. Check logs for details."
 
 # --- Gradio Interface ---
-with gr.Blocks(theme=gr.themes.Soft()) as demo_launcher:
-    gr.Markdown("# Interactive Demo Launcher")
+with gr.Blocks(theme=gr.themes.Soft(), css=".centered-title { text-align: center; flex: 0 0 80%; } .header-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; } .logo-container { flex: 0 0 20%; }") as demo_launcher:
+    with gr.Row(elem_classes=["header-row"]):
+        gr.Image("static/ampere_logo_1530x780.png", width=80, height=40, show_label=False, container=False, elem_classes=["logo-container"])
+        gr.Markdown(
+            "# Ampere-Optimized AI Playground",
+            elem_classes=["centered-title"]
+        )
     
     with gr.Column():
         status_output = gr.Markdown("Select a demo and click launch.")
-        demo_selection = gr.Dropdown(choices=list(DEMOS.keys()), label="Available Demos")
+        demo_selection = gr.Radio(choices=list(DEMOS.keys()), label="Available Demos")
         with gr.Row():
             launch_button = gr.Button("🚀 Launch Demo", variant="primary")
             stop_button = gr.Button("⏹️ Stop All Demos")
