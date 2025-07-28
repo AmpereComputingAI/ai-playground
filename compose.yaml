@@ -32,7 +32,7 @@ services:
       - "7861:7861"
 
   ollama_demo_service:
-    image: ghcr.io/amperecomputingai/ollama-ampere:0.0.8-ol9
+    image: ghcr.io/amperecomputingai/ollama-ampere:1.0.0-ol9
     container_name: ollama_demo_service
     volumes:
       - ollama:/root/.ollama
