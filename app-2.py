@@ -5,18 +5,18 @@ import time
 
 # --- Configuration ---
 DEMOS = {
+    "LLM Chat with RAG (Ollama)": {
+        "service_name": "llmchat_demo_service",
+        "url": "http://localhost:7861"
+    },
     "Object Detection (YOLO)": {
         "service_name": "yolo_demo_service",
-        "url": "http://localhost:7861"
+        "url": "http://localhost:7862"
     },
     "Speech-to-Text (Whisper)": {
         "service_name": "whisper_demo_service",
-        "url": "http://localhost:7862"
-    },
-    "LLM Chat (Ollama)": {
-        "service_name": "llmchat_demo_service",
         "url": "http://localhost:7863"
-    }
+    },
 }
 
 # --- State & Docker Client ---
@@ -105,7 +105,7 @@ with gr.Blocks(theme=gr.themes.Soft(), css=".centered-title { text-align: center
     with gr.Row(elem_classes=["header-row"]):
         gr.Image("static/ampere_logo_1530x780.png", width=80, height=40, show_label=False, container=False, elem_classes=["logo-container"])
         gr.Markdown(
-            "# Ampere Optimized AI Playground",
+            "# Ampere-Optimized AI Playground",
             elem_classes=["centered-title"]
         )
     

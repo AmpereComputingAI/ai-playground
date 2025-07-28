@@ -18,8 +18,8 @@ services:
     environment:
       CONFIG_FILE: ${CONFIG_FILE:-cfg/config.yaml}
       GRADIO_SERVER_NAME: ${GRADIO_SERVER_NAME:-0.0.0.0}
-      GRADIO_SERVER_PORT: ${GRADIO_SERVER_PORT:-7861}
-      HOST_PORT: ${HOST_PORT:-7861}
+      GRADIO_SERVER_PORT: ${GRADIO_SERVER_PORT:-7862}
+      HOST_PORT: ${HOST_PORT:-7862}
       INSTANCE_NAME: ${INSTANCE_NAME:-'Ampere'}
       NSTREAMS: ${NSTREAMS:-1}
       NTHREADS: ${NTHREADS:-16}
@@ -29,7 +29,7 @@ services:
     #network_mode: host
     ports:
       #- "${HOST_PORT}:${GRADIO_SERVER_PORT:-7861}"
-      - "7861:7861"
+      - "7862:7862"
 
   whisper_demo_service:
     image: ghcr.io/amperecomputingai/ampere-ai-ref-apps:whisper-0.3.10rc1
@@ -39,15 +39,15 @@ services:
     environment:
       CONFIG_FILE: ${CONFIG_FILE:-cfg/config.yaml}
       GRADIO_SERVER_NAME: ${GRADIO_SERVER_NAME:-0.0.0.0}
-      GRADIO_SERVER_PORT: ${GRADIO_SERVER_PORT:-7862}
-      HOST_PORT: ${HOST_PORT:-7862}
+      GRADIO_SERVER_PORT: ${GRADIO_SERVER_PORT:-7863}
+      HOST_PORT: ${HOST_PORT:-7863}
       INSTANCE_NAME: ${INSTANCE_NAME:-'AltraMax'}
       NSTREAMS: ${NSTREAMS:-1}
       NTHREADS: ${NTHREADS:-64}
       AIO_NUM_THREADS: ${AIO_NUM_THREADS:-64}
     ports:
       #- "${HOST_PORT}:${GRADIO_SERVER_PORT:-5001}"
-      - "7862:7862"
+      - "7863:7863"
 
   ollama_demo_service:
     image: ghcr.io/amperecomputingai/ollama-ampere:1.0.0-ol9
@@ -73,7 +73,7 @@ services:
     #ports:
     #  - "7863:7863"
     environment:
-      - 'PORT=7863'
+      - 'PORT=7861'
       - 'ENV=dev'
       - 'VECTOR_DB=chroma'
       - 'OLLAMA_BASE_URL=http://0.0.0.0:11434'
