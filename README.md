@@ -1,7 +1,4 @@
-
-<p style="text-align: center; font-size: 2.25rem;">
-Ampere-Optimized AI Playground
-</p>
+# Ampere-Optimized AI Playground
 
 The **Ampere Optimized AI Playground** is a Gradio-based interface that allows users to launch and interact with AI demos optimized for Ampere Computing platforms. This project provides a centralized launcher to start and stop three AI demos: LLM Chat (Ollama), Object Detection (YOLOv11), and Speech-to-Text (Whisper). Each demo runs in a Docker container, managed via Docker Compose, and is accessible through a web interface.
 
