@@ -1,6 +1,6 @@
 # Ampere-Optimized AI Playground
 
-The **Ampere Optimized AI Playground** is a Gradio-based interface that allows users to launch and interact with AI demos optimized for Ampere Computing platforms. This project provides a centralized launcher to start and stop three AI demos: LLM Chat (Ollama), Object Detection (YOLOv11), and Speech-to-Text (Whisper). Each demo runs in a Docker container, managed via Docker Compose, and is accessible through a web interface.
+The **Ampere Optimized AI Playground** is a Gradio-based interface that allows users to launch and interact with AI demos optimized for Ampere Computing platforms. This project provides a centralized launcher to start and stop three AI demos: LLM Chat with RAG (Ollama), Object Detection (YOLOv11), and Speech-to-Text (Whisper). Each demo runs in a Docker container, managed via Docker Compose, and is accessible through a web interface.
 
 ## Features
 - **Interactive Gradio UI**: Select and launch demos with a clean, user-friendly interface.
@@ -84,7 +84,7 @@ sudo firewall-cmd --list-ports
 ## Demo Details
 This project includes three AI demos, each optimized for Ampere Computing platforms. Below are details and links to their respective GitHub repositories for further information.
 
-### LLM Chat (Ollama)
+### LLM Chat with RAG (Ollama)
 - **Description:** A conversational AI demo using the Ollama framework, optimized for Ampere hardware.
 - **GitHub Repository:** Ollama Chat Demo
 - **Port:** 7861
