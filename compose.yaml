@@ -2,7 +2,7 @@ services:
   # The main entry point for the user
   launcher:
     build: .
-    image: ai-playground:0.1
+    image: ghcr.io/amperecomputingai/ai-playground:0.1
     container_name: demo_launcher
     ports:
       - "7860:7860" # Expose the Gradio UI on port 7860
