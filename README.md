@@ -80,6 +80,9 @@ Verify the ports are open:
 ```bash
 sudo firewall-cmd --list-ports
 ```
+### 4. Port Forwarding for Local and Cloud Instances
+For **local instances**, access the playground and demos using ```localhost```. For **cloud instances**, use the public IP address of the instance. Ensure ports 7860-7863 are open in your cloud provider's security group or firewall settings.
+
 
 ## Demo Details
 This project includes three AI demos, each optimized for Ampere Computing platforms. Below are details and links to their respective GitHub repositories for further information.
