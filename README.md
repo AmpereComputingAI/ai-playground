@@ -89,19 +89,19 @@ This project includes three AI demos, each optimized for Ampere Computing platfo
 
 ### LLM Chat with RAG (Ollama)
 - **Description:** A conversational AI demo using the Ollama framework, optimized for Ampere hardware.
-- **GitHub Repository:** Ollama Chat Demo
+- **GitHub Repository:** [Ollama Chat Demo](https://github.com/AmpereComputingAI/ampere-ai-llama-chat/tree/0.0.12)
 - **Port:** 7861
 - **Access:** Once launched, access at ```http://<host>:7861``` (use ```localhost``` for local setups or the public IP for cloud instances)
 
 ### Object Detection (YOLOv11)
 - **Description:** A real-time object detection demo using YOLOv11, optimized for Ampere hardware.
-- **GitHub Repository:** YOLOv11 Demo
+- **GitHub Repository:** [YOLOv11 Demo](https://github.com/AmpereComputingAI/ampere-ai-ref-apps/tree/main/vision/object-detection/YOLOv11)
 - **Port:** 7862
 - **Access:** Once launched, access at ```http://<host>:7862``` (use ```localhost``` for local setups or the public IP for cloud instances)
 
 ### Speech-to-Text (Whisper)
 - **Description:** An automatic speech recognition demo using the Whisper model, optimized for Ampere platforms.
-- **GitHub Repository:** Whisper Demo
+- **GitHub Repository:** [Whisper Demo](https://github.com/AmpereComputingAI/ampere-ai-ref-apps/tree/main/audio/automatic-speech-recognition/whisper)
 - **Port:** 7863
 - **Access:** Once launched, access at ```http://<host>:7863``` (use ```localhost``` for local setups or the public IP for cloud instances)
 
