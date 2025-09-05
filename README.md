@@ -55,8 +55,8 @@ docker compose --version
 Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/AmpereComputingAI/ampere-ai-playground.git
-cd ampere-ai-playground
+git clone https://github.com/AmpereComputingAI/ai-playground.git
+cd ai-playground
 ```
 
 ### 3. Open Firewall Ports
