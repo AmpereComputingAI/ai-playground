@@ -54,9 +54,8 @@ services:
     container_name: ollama_demo_service
     volumes:
       - ollama:/root/.ollama
-    #network_mode: host
-    ports:
-      - "11434:11434"
+    networks:
+      - public
     environment:
       - "OLLAMA_HOST=0.0.0.0:11434"
     tty: true
@@ -69,14 +68,15 @@ services:
       - open-webui:/app/backend/data
     depends_on:
       - ollama_demo_service
-    network_mode: host
-    #ports:
-    #  - "7863:7863"
+    networks:
+      - public
+    ports:
+      - "7861:7861"
     environment:
       - 'PORT=7861'
       - 'ENV=dev'
       - 'VECTOR_DB=chroma'
-      - 'OLLAMA_BASE_URL=http://0.0.0.0:11434'
+      - 'OLLAMA_BASE_URL=http://ollama_demo_service:11434'
       - 'WEBUI_NAME=Ampere Llama Chat'
       - 'ENABLE_LITELLM=False'
       - 'WEBUI_SECRET_KEY='
@@ -86,3 +86,7 @@ services:
 volumes:
   ollama: {}
   open-webui: {}
+
+networks:
+  - public:
+    driver: bridge
