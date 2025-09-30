@@ -88,5 +88,5 @@ volumes:
   open-webui: {}
 
 networks:
-  - public:
+  public:
     driver: bridge
