@@ -19,8 +19,9 @@ The **Ampere Optimized AI Playground** is a Gradio-based interface that allows u
 To set up Docker and Docker Compose, run the following commands in a terminal:
 
 ```bash
-# Update package index
+# Update package index and base image
 sudo apt-get update
+sudo apt-get upgrade -y
 
 # Install prerequisites
 sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
@@ -40,6 +41,7 @@ sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 
 # Add user to Docker group to run Docker without sudo
+# The Docker group should be created when installing the docker-ce package, but if it is not, also run "sudo groupadd docker"
 sudo usermod -aG docker $USER
 newgrp docker
 ```
@@ -60,7 +62,10 @@ cd ai-playground
 ```
 
 ### 3. Open Firewall Ports
-The playground and demos use ports 7860 (Gradio UI), 7861 (Ollama), 7862 (YOLOv11), and 7863 (Whisper). Open these ports using ```firewall-cmd```:
+The playground and demos use ports 7860 (Gradio UI), 7861 (Ollama), 7862 (YOLOv11), and 7863 (Whisper).
+In addition, we need to be able to download models from the Internet to the ollama service, which will
+require us to NAT traffic from the container bridge network to the host's Ethernet interface.
+We accomplish these tasks by using ```firewall-cmd```:
 
 ```bash
 # Ensure firewalld is installed
@@ -70,15 +75,25 @@ sudo apt-get install -y firewalld
 sudo systemctl start firewalld
 sudo systemctl enable firewalld
 
+# Find your Ethernet interface name
+ip a
+
+# We are looking for the Ethernet device for the host - in recent Linux distributions, these are commonly
+# ethX, or begin with en (usually enp or ens)
+#
+# Add the Ethernet interface to the public Firewall zone, and enable IP masquerading
+sudo firewall-cmd --zone=public --add-interface=<YOUR_ETHERNET_DEVICE_NAME> --permanent
+sudo firewall-cmd --zone=public --add-masquerade --permanent
+
 # Open ports 7860-7863
 sudo firewall-cmd --permanent --add-port=7860-7863/tcp
 sudo firewall-cmd --reload
 ```
 
-Verify the ports are open:
+Verify the ports are open, that the Ethernet device is allowed to relay traffic, and that IP Masquerade is set:
 
 ```bash
-sudo firewall-cmd --list-ports
+sudo firewall-cmd --list-all
 ```
 ### 4. Port Forwarding for Local and Cloud Instances
 For **local instances**, access the playground and demos using ```localhost```. For **cloud instances**, use the public IP address of the instance. Ensure ports 7860-7863 are open in your cloud provider's security group or firewall settings.
