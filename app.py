@@ -9,6 +9,10 @@ DEMOS = {
         "service_name": "llmchat_demo_service",
         "url": "http://localhost:7861"
     },
+    "Agentic AI": {
+        "service_name": "agentic_ai_demo_service",
+        "url": "http://localhost:7864"
+    },
     "Object Detection (YOLO)": {
         "service_name": "yolo_demo_service",
         "url": "http://localhost:7862"
@@ -32,6 +36,14 @@ def get_running_container(service_name):
     except docker.errors.NotFound:
         return None
 
+def stop_dependent_container(cont_name):
+    container_to_stop = get_running_container(cont_name)
+    if container_to_stop:
+        print(f"Stopping {cont_name}...")
+        container_to_stop.stop()
+        container_to_stop.remove() # Remove to ensure a clean start next time
+        print(f"{cont_name} stopped.")
+
 def stop_all_demos():
     """Stops any running demo container managed by this launcher."""
     global current_container
@@ -46,13 +58,13 @@ def stop_all_demos():
 
             # Stop and remove dependent ollama container
             if demo_info['service_name'] == 'llmchat_demo_service':
-                cont_name = 'ollama_demo_service'
-                container_to_stop = get_running_container(cont_name)
-                if container_to_stop:
-                    print(f"Stopping {cont_name}...")
-                    container_to_stop.stop()
-                    container_to_stop.remove() # Remove to ensure a clean start next time
-                    print(f"{cont_name} stopped.")
+                dep_cont_name = 'ollama_demo_service'
+                stop_dependent_container(dep_cont_name)
+            elif demo_info['service_name'] == 'agentic_ai_demo_service':
+                dep_cont_name = 'ollama_for_agent_service'
+                stop_dependent_container(dep_cont_name)
+                dep_cont_name = 'searxng'
+                stop_dependent_container(dep_cont_name)
 
     current_container = None
     return "All demos have been stopped."

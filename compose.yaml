@@ -1,13 +1,16 @@
 services:
   # The main entry point for the user
   launcher:
-    build: .
-    image: ghcr.io/amperecomputingai/ai-playground:0.2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/amperecomputingai/ai-playground:0.3-rc1
     container_name: demo_launcher
     ports:
       - "7860:7860" # Expose the Gradio UI on port 7860
+    networks:
+      - public
     volumes:
-      # Mount the Docker socket to allow this container to control others
       - /var/run/docker.sock:/var/run/docker.sock
 
   yolo_demo_service:
@@ -26,10 +29,10 @@ services:
       VIDEO_SRC: ${VIDEO_SRC:-''}
       WEBCAM0_SRC: ${WEBCAM0_SRC:-0}
       WEBCAM1_SRC: ${WEBCAM1_SRC:-2}
-    #network_mode: host
     ports:
-      #- "${HOST_PORT}:${GRADIO_SERVER_PORT:-7861}"
       - "7862:7862"
+    networks:
+      - public
 
   whisper_demo_service:
     image: ghcr.io/amperecomputingai/ampere-ai-ref-apps:whisper-0.3.10rc1
@@ -46,18 +49,21 @@ services:
       NTHREADS: ${NTHREADS:-64}
       AIO_NUM_THREADS: ${AIO_NUM_THREADS:-64}
     ports:
-      #- "${HOST_PORT}:${GRADIO_SERVER_PORT:-5001}"
       - "7863:7863"
+    networks:
+      - public
 
   ollama_demo_service:
     image: ghcr.io/amperecomputingai/ollama-ampere:1.0.0-ol9
     container_name: ollama_demo_service
     volumes:
       - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
     networks:
       - public
     environment:
-      - "OLLAMA_HOST=0.0.0.0:11434"
+      - "OLLAMA_HOST=http://ollama_demo_service:11434"
     tty: true
     restart: unless-stopped
 
@@ -83,10 +89,83 @@ services:
       - 'WEBUI_AUTH=False'
     restart: unless-stopped
 
-volumes:
-  ollama: {}
-  open-webui: {}
+  ollama_for_agent_service:
+    image: ghcr.io/amperecomputingai/ollama-ampere:1.0.0-ol9
+    container_name: ollama_for_agent_service
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    networks:
+      - public
+    volumes:
+      - n8n_ollama_data:/root/.ollama
+    environment:
+      - "OLLAMA_HOST=http://ollama_for_agent_service:11434"
+    tty: true
+    entrypoint: "bash -c \"ollama serve & sleep 5 && ollama pull llama3.2:1b && wait\""
+
+  searxng:
+    container_name: searxng
+    image: docker.io/searxng/searxng:2025.9.23-a57b29b00
+    user: "977:977"
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./searxng:/etc/searxng:rw
+      - n8n_searxng:/var/cache/searxng:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - public
+    environment:
+     - SEARXNG_BASE_URL=http://searxng:8080
+     - SEARXNG_DEBUG=1
+     - SEARXNG_HOSTNAME=searxng
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+  agentic_ai_demo_service:
+    #image: ghcr.io/amperecomputingai/ampere-ai-agents:0.1.3
+    image: ghcr.io/amperecomputingai/ampere-ai-agents:0.1.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agentic_ai_demo_service
+    depends_on:
+      - ollama_for_agent_service
+      - searxng
+    restart: always
+    ports:
+      - "7864:5678"
+    networks:
+      - public
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - NODE_ENV=development
+      - N8N_BASIC_AUTH_ACTIVE=false # Disables authentication
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - N8N_READ_ONLY=true
+      - N8N_INITIAL_SETUP_COMPLETED=true
+      - N8N_LOG_LEVEL=debug
+      - N8N_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_UNVERIFIED_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
 
 networks:
   public:
     driver: bridge
+
+volumes:
+  ollama: {}
+  open-webui: {}
+  n8n_data: {}
+  n8n_ollama_data: {}
+  n8n_searxng: {}
