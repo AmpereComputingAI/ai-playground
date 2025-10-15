@@ -66,6 +66,7 @@ services:
       - "OLLAMA_HOST=http://ollama_demo_service:11434"
     tty: true
     restart: unless-stopped
+    entrypoint: "bash -c \"ollama serve & sleep 5 && ollama pull llama3.2:1b && wait\""
 
   llmchat_demo_service:
     image: ghcr.io/open-webui/open-webui:v0.5.20
@@ -74,10 +75,10 @@ services:
       - open-webui:/app/backend/data
     depends_on:
       - ollama_demo_service
-    networks:
-      - public
     ports:
       - "7861:7861"
+    networks:
+      - public
     environment:
       - 'PORT=7861'
       - 'ENV=dev'
