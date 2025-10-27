@@ -1,6 +1,6 @@
 # Ampere-Optimized AI Playground
 
-The **Ampere Optimized AI Playground** is a Gradio-based interface that allows users to launch and interact with AI demos optimized for Ampere Computing platforms. This project provides a centralized launcher to start and stop three AI demos: LLM Chat with RAG (Ollama), Object Detection (YOLOv11), and Speech-to-Text (Whisper). Each demo runs in a Docker container, managed via Docker Compose, and is accessible through a web interface.
+The **Ampere Optimized AI Playground** is a Gradio-based interface that allows users to launch and interact with AI demos optimized for Ampere Computing platforms. This project provides a centralized launcher to start and stop four AI demos: LLM Chat with RAG (Ollama), Agentic AI (n8n, Ollama), Object Detection (YOLOv11), and Speech-to-Text (Whisper). Each demo runs in a Docker container, managed via Docker Compose, and is accessible through a web interface.
 
 ## Features
 - **Interactive Gradio UI**: Select and launch demos with a clean, user-friendly interface.
@@ -11,7 +11,7 @@ The **Ampere Optimized AI Playground** is a Gradio-based interface that allows u
 ## Prerequisites
 - **Ubuntu** (Tested on Ubuntu 24.04 or later)
 - **Docker** and **Docker Compose** installed
-- **Ports 7860-7863** open for the Gradio UI and demo services
+- **Ports 7860-7864** open for the Gradio UI and demo services
 
 ## Installation
 
@@ -59,10 +59,11 @@ Clone this repository to your local machine:
 ```bash
 git clone https://github.com/AmpereComputingAI/ai-playground.git
 cd ai-playground
+git checkout <latest-release>
 ```
 
 ### 3. Open Firewall Ports
-The playground and demos use ports 7860 (Gradio UI), 7861 (Ollama), 7862 (YOLOv11), and 7863 (Whisper).
+The playground and demos use ports 7860 (Gradio UI), 7861 (Ollama), 7862 (YOLOv11), 7863 (Whisper) and 7864 (Agentic AI).
 In addition, we need to be able to download models from the Internet to the ollama service, which will
 require us to NAT traffic from the container bridge network to the host's Ethernet interface.
 We accomplish these tasks by using ```firewall-cmd```:
@@ -85,8 +86,8 @@ ip a
 sudo firewall-cmd --zone=public --add-interface=<YOUR_ETHERNET_DEVICE_NAME> --permanent
 sudo firewall-cmd --zone=public --add-masquerade --permanent
 
-# Open ports 7860-7863
-sudo firewall-cmd --permanent --add-port=7860-7863/tcp
+# Open ports 7860-7864
+sudo firewall-cmd --permanent --add-port=7860-7864/tcp
 sudo firewall-cmd --reload
 ```
 
@@ -96,7 +97,7 @@ Verify the ports are open, that the Ethernet device is allowed to relay traffic,
 sudo firewall-cmd --list-all
 ```
 ### 4. Port Forwarding for Local and Cloud Instances
-For **local instances**, access the playground and demos using ```localhost```. For **cloud instances**, use the public IP address of the instance. Ensure ports 7860-7863 are open in your cloud provider's security group or firewall settings.
+For **local instances**, access the playground and demos using ```localhost```. For **cloud instances**, use the public IP address of the instance. Ensure ports 7860-7864 are open in your cloud provider's security group or firewall settings.
 
 
 ## Demo Details
@@ -107,6 +108,12 @@ This project includes three AI demos, each optimized for Ampere Computing platfo
 - **GitHub Repository:** [Ollama Chat Demo](https://github.com/AmpereComputingAI/ampere-ai-llama-chat/tree/0.0.12)
 - **Port:** 7861
 - **Access:** Once launched, access at ```http://<host>:7861``` (use ```localhost``` for local setups or the public IP for cloud instances)
+
+### Agentic AI Demo (n8n, Ollama)
+- **Description:** Agentic AI Demo with n8n workflow automation tool, Ollama optimized for Ampere hardware.
+- **GitHub Repository:** [Agentic AI Demo](https://github.com/AmpereComputingAI/ampere-ai-agents/tree/0.1.1)
+- **Port:** 7864
+- **Access:** Once launched, access at ```http://<host>:7864``` (use ```localhost``` for local setups or the public IP for cloud instances)
 
 ### Object Detection (YOLOv11)
 - **Description:** A real-time object detection demo using YOLOv11, optimized for Ampere hardware.
@@ -135,7 +142,7 @@ Once the playground is launched, open your web browser and navigate to:
 http://<host>:7860
 ```
 
-Replace ```<host>``` with ```localhost``` for local setups or the public IP address for cloud instances. From the Gradio UI, select a demo (Ollama, YOLOv11, or Whisper) and click "Launch Demo". The interface will display a link to the live demo (e.g., ```http://<host>:7861``` for Ollama). Click the link to access the running demo.
+Replace ```<host>``` with ```localhost``` for local setups or the public IP address for cloud instances. From the Gradio UI, select a demo (Ollama, Agentic AI, YOLOv11, or Whisper) and click "Launch Demo". The interface will display a link to the live demo (e.g., ```http://<host>:7861``` for Ollama). Click the link to access the running demo.
 
 ### Stopping the Demos
 To stop all running demos and the playground, use the provided ```stop-app.sh``` script:
@@ -149,28 +156,21 @@ This script stops and removes all demo containers, ensuring a clean state for th
 ### Accessing Live Demos
 Once a demo is launched via the Gradio UI, the interface will display a confirmation message with a URL to the live demo. For example:
 - **Ollama**: ```http://<host>:7861```
+- **Agentic AI**: ```http://<host>:7864```
 - **YOLOv11**: ```http://<host>:7862```
 - **Whisper**: ```http://<host>:7863```
 
 Replace ```<host>``` with ```localhost``` for local setups or the public IP address for cloud instances. Click the provided link in the Gradio UI to access the demo's web interface. It may take a moment for the demo to become available after launching.
 
 ## Troubleshooting
-- **Port Conflicts**: If ports 7860-7863 are in use, stop conflicting services or change the ports in the ```compose.yaml``` file and update ```app.py``` accordingly.
+- **Port Conflicts**: If ports 7860-7864 are in use, stop conflicting services or change the ports in the ```compose.yaml``` file and update ```app.py``` accordingly.
 - **Docker Permissions**: Ensure your user is in the ```docker``` group (```sudo usermod -aG docker $USER```) and log out/in to apply changes.
 - **Demo Fails to Launch**: Check Docker logs for the specific service:
 
 ```bash
 docker logs <service_name>
 ```
-Replace ```<service_name>``` with ```ollama_demo_service```, ```yolo_demo_service```, or ```whisper_demo_service```.
+Replace ```<service_name>``` with ```ollama_demo_service```, ```yolo_demo_service```, ```whisper_demo_service```, or ```agentic_ai_demo_service```.
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-
-
-
-
-
-
-
