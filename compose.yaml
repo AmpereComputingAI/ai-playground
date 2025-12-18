@@ -224,6 +224,37 @@ services:
       - host.docker.internal:host-gateway
     restart: unless-stopped
 
+  llama_cpp_server_for_codegen_service:
+    image: amperecomputingai/llama.cpp:3.4.0
+    container_name: llama_cpp_server_for_codegen_service
+    restart: unless-stopped
+    ports:
+      - 7868:8080
+    volumes:
+      - codegen-llama-cpp-data:/root/.cache
+    environment:
+      - LLAMA_ARG_HF_REPO=unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:Qwen3-Coder-30B-A3B-Instruct-Q8_0.gguf
+
+  codegen_demo_service:
+    image: ghcr.io/open-webui/open-webui:v0.6.40
+    container_name: codegen_demo_service
+    volumes:
+      - codegen-open-webui:/app/backend/data
+    depends_on:
+      - llama_cpp_server_for_codegen_service
+    ports:
+      - 7866:8080
+    environment:
+      - ENV=dev
+      - ENABLE_OLLAMA_API=False
+      - WEBUI_SECRET_KEY=''
+      - WEBUI_AUTH=False
+      - OPENAI_API_BASE_URL=http://host.docker.internal:7868/v1
+      - OPENAI_API_KEY=none
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+
 networks:
   public:
     driver: bridge
@@ -236,3 +267,5 @@ volumes:
   n8n_searxng: {}
   text2sql-ollama: {}
   text2sql-open-webui: {}
+  codegen-llama-cpp-data: {}
+  codegen-open-webui: {}
