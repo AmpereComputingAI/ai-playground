@@ -160,6 +160,70 @@ services:
       - N8N_UNVERIFIED_COMMUNITY_PACKAGES_ENABLED=true
       - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
 
+  ollama_for_text2sql_service:
+    volumes:
+      - text2sql-ollama:/root/.ollama
+    container_name: ollama_for_text2sql_service
+    tty: true
+    restart: unless-stopped
+    image: ghcr.io/amperecomputingai/ollama-ampere:1.0.0-ol9
+    ports:
+      - 11434:11434
+    # Healthcheck ensures the server is ready before the puller starts
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  ollama_puller_for_text2sql:
+    image: ghcr.io/amperecomputingai/ollama-ampere:1.0.0-ol9
+    container_name: ollama_puller_for_text2sql
+    # We link this to the main ollama service so it can communicate
+    environment:
+      - OLLAMA_HOST=ollama_for_text2sql_service:11434
+    depends_on:
+      ollama_for_text2sql_service:
+        condition: service_healthy
+    # This is the command you requested, running in a container that knows the server is ready
+    command: pull hf.co/mradermacher/Arctic-Text2SQL-R1-7B-GGUF:Arctic-Text2SQL-R1-7B.Q8_0.gguf
+
+  pg_dvdrental_service:
+    image: ghcr.io/amperecomputingai/ampere-ai-text2sql:pg_dvdrental_0.1
+    container_name: pg_dvdrental_service
+    restart: always
+    ports:
+      - 5436:5432
+    environment:
+      POSTGRES_DB: dvdrental
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dvdrental
+
+  text2sql_demo_service:
+    image: ghcr.io/open-webui/open-webui:v0.6.40
+    container_name: text2sql_demo_service
+    volumes:
+      - text2sql-open-webui:/app/backend/data
+      - ./functions:/app/backend/data/functions
+    depends_on:
+      - ollama_puller_for_text2sql
+      - pg_dvdrental_service
+    ports:
+      - 7865:8080
+    environment:
+      - 'ENV=dev'
+      - 'OLLAMA_BASE_URL=http://ollama_for_text2sql_service:11434'
+      - 'WEBUI_SECRET_KEY='
+      - 'WEBUI_AUTH=False'
+      - 'FUNCTIONS_PATH=/app/backend/data/functions'
+      - OPENAI_API_BASE_URL=http://host.docker.internal:11434/v1
+      - OPENAI_API_KEY=ollama
+    env_file:
+        - .env
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+
 networks:
   public:
     driver: bridge
@@ -170,3 +234,5 @@ volumes:
   n8n_data: {}
   n8n_ollama_data: {}
   n8n_searxng: {}
+  text2sql-ollama: {}
+  text2sql-open-webui: {}
