@@ -21,6 +21,14 @@ DEMOS = {
         "service_name": "whisper_demo_service",
         "url": "http://localhost:7863"
     },
+    "Text to SQL": {
+        "service_name": "text2sql_demo_service",
+        "url": "http://localhost:7865"
+    },
+    "Code Generation": {
+        "service_name": "codegen_demo_service",
+        "url": "http://localhost:7866"
+    },
 }
 
 # --- State & Docker Client ---
@@ -64,6 +72,16 @@ def stop_all_demos():
                 dep_cont_name = 'ollama_for_agent_service'
                 stop_dependent_container(dep_cont_name)
                 dep_cont_name = 'searxng'
+                stop_dependent_container(dep_cont_name)
+            elif demo_info['service_name'] == 'text2sql_demo_service':
+                dep_cont_name = 'ollama_puller_for_text2sql'
+                stop_dependent_container(dep_cont_name)
+                dep_cont_name = 'ollama_for_text2sql_service'
+                stop_dependent_container(dep_cont_name)
+                dep_cont_name = 'pg_dvdrental_service'
+                stop_dependent_container(dep_cont_name)
+            elif demo_info['service_name'] == 'codegen_demo_service':
+                dep_cont_name = 'llama_cpp_server_for_codegen_service'
                 stop_dependent_container(dep_cont_name)
 
     current_container = None
