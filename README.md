@@ -1,6 +1,6 @@
 # Ampere-Optimized AI Playground
 
-The **Ampere Optimized AI Playground** is a Gradio-based interface that allows users to launch and interact with AI demos optimized for Ampere Computing platforms. This project provides a centralized launcher to start and stop four AI demos: LLM Chat with RAG (Ollama), Agentic AI (n8n, Ollama), Object Detection (YOLOv11), and Speech-to-Text (Whisper). Each demo runs in a Docker container, managed via Docker Compose, and is accessible through a web interface.
+The **Ampere Optimized AI Playground** is a Gradio-based interface that allows users to launch and interact with AI demos optimized for Ampere Computing platforms. This project provides a centralized launcher to start and stop five AI demos: LLM Chat with RAG (Ollama), Agentic AI (n8n, Ollama), Object Detection (YOLOv11), Speech-to-Text (Whisper), and Text-to-SQL(Ollama, Open-WebUI). Each demo runs in a Docker container, managed via Docker Compose, and is accessible through a web interface.
 
 ## Features
 - **Interactive Gradio UI**: Select and launch demos with a clean, user-friendly interface.
@@ -11,7 +11,7 @@ The **Ampere Optimized AI Playground** is a Gradio-based interface that allows u
 ## Prerequisites
 - **Ubuntu** (Tested on Ubuntu 24.04 or later)
 - **Docker** and **Docker Compose** installed
-- **Ports 7860-7864** open for the Gradio UI and demo services
+- **Ports 7860-7865** open for the Gradio UI and demo services
 
 ## Installation
 
@@ -63,7 +63,8 @@ git checkout <latest-release>
 ```
 
 ### 3. Open Firewall Ports
-The playground and demos use ports 7860 (Gradio UI), 7861 (Ollama), 7862 (YOLOv11), 7863 (Whisper) and 7864 (Agentic AI).
+The playground and demos use ports 7860 (Gradio UI), 7861 (Ollama), 7862 (YOLOv11), 7863 (Whisper), 7864 (Agentic AI) and 7865 (Text-to-SQL).
+
 In addition, we need to be able to download models from the Internet to the ollama service, which will
 require us to NAT traffic from the container bridge network to the host's Ethernet interface.
 We accomplish these tasks by using ```firewall-cmd```:
@@ -87,7 +88,7 @@ sudo firewall-cmd --zone=public --add-interface=<YOUR_ETHERNET_DEVICE_NAME> --pe
 sudo firewall-cmd --zone=public --add-masquerade --permanent
 
 # Open ports 7860-7864
-sudo firewall-cmd --permanent --add-port=7860-7864/tcp
+sudo firewall-cmd --permanent --add-port=7860-7865/tcp
 sudo firewall-cmd --reload
 ```
 
@@ -97,7 +98,7 @@ Verify the ports are open, that the Ethernet device is allowed to relay traffic,
 sudo firewall-cmd --list-all
 ```
 ### 4. Port Forwarding for Local and Cloud Instances
-For **local instances**, access the playground and demos using ```localhost```. For **cloud instances**, use the public IP address of the instance. Ensure ports 7860-7864 are open in your cloud provider's security group or firewall settings.
+For **local instances**, access the playground and demos using ```localhost```. For **cloud instances**, use the public IP address of the instance. Ensure ports 7860-7865 are open in your cloud provider's security group or firewall settings.
 
 
 ## Demo Details
@@ -126,6 +127,12 @@ This project includes three AI demos, each optimized for Ampere Computing platfo
 - **GitHub Repository:** [Whisper Demo](https://github.com/AmpereComputingAI/ampere-ai-ref-apps/tree/main/audio/automatic-speech-recognition/whisper)
 - **Port:** 7863
 - **Access:** Once launched, access at ```http://<host>:7863``` (use ```localhost``` for local setups or the public IP for cloud instances)
+
+### Text-to-SQL (Ollama, Open-WebUI)
+- **Description:** Turn your natural language questions into executable SQL using Open WebUI and LlamaIndex on Ampere CPUs.
+- **GitHub Repository:** [Text-to-SQL Demo](https://github.com/AmpereComputingAI/ampere-ai-text2sql)
+- **Port:** 7865
+- **Access:** Once launched, access at ```http://<host>:7865``` (use ```localhost``` for local setups or the public IP for cloud instances)
 
 ## Running the Playground
 ### Starting the Playground
@@ -159,18 +166,19 @@ Once a demo is launched via the Gradio UI, the interface will display a confirma
 - **Agentic AI**: ```http://<host>:7864```
 - **YOLOv11**: ```http://<host>:7862```
 - **Whisper**: ```http://<host>:7863```
+- **Text-to-SQL**: ```http://<host>:7865```
 
 Replace ```<host>``` with ```localhost``` for local setups or the public IP address for cloud instances. Click the provided link in the Gradio UI to access the demo's web interface. It may take a moment for the demo to become available after launching.
 
 ## Troubleshooting
-- **Port Conflicts**: If ports 7860-7864 are in use, stop conflicting services or change the ports in the ```compose.yaml``` file and update ```app.py``` accordingly.
+- **Port Conflicts**: If ports 7860-7865 are in use, stop conflicting services or change the ports in the ```compose.yaml``` file and update ```app.py``` accordingly.
 - **Docker Permissions**: Ensure your user is in the ```docker``` group (```sudo usermod -aG docker $USER```) and log out/in to apply changes.
 - **Demo Fails to Launch**: Check Docker logs for the specific service:
 
 ```bash
 docker logs <service_name>
 ```
-Replace ```<service_name>``` with ```ollama_demo_service```, ```yolo_demo_service```, ```whisper_demo_service```, or ```agentic_ai_demo_service```.
+Replace ```<service_name>``` with ```ollama_demo_service```, ```yolo_demo_service```, ```whisper_demo_service```, ```agentic_ai_demo_service```, or ```text2sql_demo_service```.
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
