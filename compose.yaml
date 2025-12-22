@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/amperecomputingai/ai-playground:0.3-rc1
+    image: ghcr.io/amperecomputingai/ai-playground:0.4
     container_name: demo_launcher
     ports:
       - "7860:7860" # Expose the Gradio UI on port 7860
