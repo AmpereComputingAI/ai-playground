@@ -11,7 +11,7 @@ COPY install-docker.sh .
 RUN ./install-docker.sh
 
 FROM base AS runtime
-COPY compose.yaml app.py .
+COPY app.py compose.yaml .env .
 COPY ./static ./static
 COPY ./searxng ./searxng
 
