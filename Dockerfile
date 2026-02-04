@@ -13,7 +13,6 @@ RUN ./install-docker.sh
 FROM base AS runtime
 COPY app.py compose.yaml .env .
 COPY ./static ./static
-COPY ./searxng ./searxng
 
 #CMD ["python", "launcher/launcher.py"]
 CMD ["python", "-u", "app.py"]
