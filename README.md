@@ -50,7 +50,7 @@ After running these commands, log out and back in to apply the group changes. Ve
 
 ```bash
 docker --version
-docker compose --version
+docker compose version
 ```
 
 ### 2. Clone the Repository
